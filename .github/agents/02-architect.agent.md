@@ -21,7 +21,7 @@ Apply every naming convention and security rule from that file throughout your o
 
 ## Your Task
 
-Produce the file `scenario/requirements-architecture.md` with these three sections:
+Produce the file `scenario/requirements-architecture.md` with these three sections. Use the IaC provider selected by the user and passed to you by the Conductor. If no provider was specified, use Bicep.
 
 ### Section 1 – Parsed Requirements
 
@@ -42,7 +42,9 @@ For each resource from Section 1:
 
 ### Section 3 – Artifact Contract
 
-A table listing the files the Bicep + Deploy agent must produce:
+State the selected IaC provider and include only that provider's file list in the Artifact Contract:
+
+For Bicep:
 
 | File | Purpose |
 |---|---|
@@ -51,9 +53,20 @@ A table listing the files the Bicep + Deploy agent must produce:
 | `scenario/azure.yaml` | azd project manifest |
 | `scenario/deployment-summary.md` | Post-deployment record |
 
+For Terraform:
+
+| File | Purpose |
+|---|---|
+| `scenario/infra/main.tf` | Terraform configuration for all resources |
+| `scenario/infra/variables.tf` | Typed input variables for workload, environment, location, and required credentials |
+| `scenario/infra/outputs.tf` | Resource group name, App Service hostname, and Key Vault URI |
+| `scenario/infra/.terraform.lock.hcl` | Reproducible Terraform provider selections |
+| `scenario/infra/.gitignore` | Excludes local Terraform state, provider cache, generated plans, and secret variable files |
+| `scenario/deployment-summary.md` | Post-deployment record |
+
 ## Rules
 
 - Apply CAF naming from SKILL.md to every resource name you recommend.
-- Do not generate any Bicep code. Your output is documentation only.
+- Do not generate infrastructure code. Your output is documentation only.
 - Write the file to `scenario/requirements-architecture.md`.
 - Create the `scenario/` folder if it does not exist.

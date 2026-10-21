@@ -1,10 +1,10 @@
 # Azure Agentic Operations
 
 This repository provides a VS Code custom-agent workflow for turning an Azure
-workload description into an architecture assessment, Bicep infrastructure, and
-an `azd` provisioning attempt. The workflow separates architecture decisions
-from infrastructure generation and deployment, and applies shared Azure naming,
-SKU, and security defaults.
+workload description into an architecture assessment and infrastructure
+provisioning attempt. The workflow separates architecture decisions from
+infrastructure generation and deployment, supports Bicep or Terraform, and
+applies shared Azure naming, SKU, and security defaults.
 
 The included scenario describes a development web application hosted on Linux
 App Service with Azure SQL Database and Key Vault. It contains infrastructure
@@ -14,19 +14,38 @@ does not publish an application.
 ## How the workflow works
 
 Start the **01-conductor** agent in VS Code and provide the workload scenario.
-It coordinates two specialized agents in order:
+Specify Bicep or Terraform to select the infrastructure provider. If omitted,
+the workflow preserves its existing Bicep default. It coordinates specialized
+agents in order:
 
 1. **02-architect** parses the request, assesses the Azure architecture, and
-   writes `scenario/requirements-architecture.md`.
-2. **03-bicep-deploy** reads that assessment and the shared defaults, creates
-   the Bicep template, parameter file, and `azd` manifest, then attempts
-   provisioning and records the result in `scenario/deployment-summary.md`.
+   writes `scenario/requirements-architecture.md` with the selected provider's
+   artifact contract.
+2. **03-bicep-deploy** or **04-terraform-deploy** reads that assessment and the
+   shared defaults, creates the matching IaC artifacts, attempts provisioning,
+   and records the result in `scenario/deployment-summary.md`.
 
 The conductor checks the architecture artifact before continuing and checks
 that the expected deployment artifacts exist before reporting the outcome. The
 shared conventions and security baseline are in
 [`SKILL.md`](.github/skills/SKILL.md); Bicep-specific standards are in
 [`bicep.instructions.md`](.github/instructions/bicep.instructions.md).
+
+### Example prompts
+
+Send either prompt to **01-conductor**. If you omit the provider, the conductor
+defaults to **Bicep** and delegates deployment to **03-bicep-deploy**.
+
+**Bicep (default):**
+
+> Provision the included development web-app scenario using the repository's
+> shared defaults.
+
+**Terraform:**
+
+> Provision the included development web-app scenario using Terraform and the
+> repository's shared defaults. Stop and ask before applying if the plan would
+> destroy or replace existing resources.
 
 ## Included scenario
 
@@ -48,13 +67,15 @@ The architecture assessment is
 [`scenario/requirements-architecture.md`](scenario/requirements-architecture.md).
 The Bicep template and parameters are in [`scenario/infra/`](scenario/infra/),
 and [`scenario/azure.yaml`](scenario/azure.yaml) configures `azd` to use that
-infrastructure directory.
+infrastructure directory. The Terraform deployment agent generates its
+configuration in the same directory and uses Terraform to provision it.
 
 ## Prerequisites
 
 - VS Code with custom agents and agent skills enabled.
 - Azure CLI authenticated to the intended subscription (`az login`).
-- Azure Developer CLI (`azd`) available in the terminal.
+- For Bicep provisioning, Azure Developer CLI (`azd`) available in the terminal.
+- For Terraform provisioning, Terraform CLI available in the terminal.
 - An Azure subscription with the required permissions, regional resource
   availability, and quota for the selected SKUs.
 - Azure CLI signed in as the Entra administrator to configure for Azure SQL.
@@ -138,7 +159,7 @@ access; do not store passwords or connection strings in application settings.
 
 ```text
 .github/
-  agents/          Conductor, architect, and Bicep/deploy agent definitions
+  agents/          Conductor, architect, Bicep/deploy, and Terraform/deploy agent definitions
   instructions/    Bicep authoring standards
   skills/          Shared Azure naming, security, and SKU defaults
 env-variables.txt  Local provisioning command example and runtime environment setup
