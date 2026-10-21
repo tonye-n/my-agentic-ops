@@ -1,7 +1,6 @@
 <!--
 (
   set -e
-  cd "/Users/Etim.Nkpsong/Library/CloudStorage/OneDrive-CivicaUKLtd/repos/mine/azure/my-agentic-ops/scenario"
   azd env select webapp-dev
 
   export AZURE_SUBSCRIPTION_ID="$(az account show --query id -o tsv)"
