@@ -23,7 +23,7 @@ Before writing any code, read the following files in order:
 Create `scenario/infra/main.bicep`:
 
 - Use Azure Verified Modules (AVM) for every resource type that has an available AVM module. Fall back to native `resource` blocks only when no AVM module exists.
-- Declare parameters: `workloadName` (string), `environment` (string), `location` (string, default `'eastus2'`).
+- Declare parameters: `workloadName` (string), `environment` (string), `location` (string, default `'eastus'`).
 - Name every resource using the pattern from SKILL.md, composing the name from `workloadName` and `environment`.
 - Apply all security baseline rules from SKILL.md:
   - `httpsOnly: true` on App Service.

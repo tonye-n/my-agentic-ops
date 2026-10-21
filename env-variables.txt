@@ -1,0 +1,18 @@
+<!--
+(
+  set -e
+  cd "/Users/Etim.Nkpsong/Library/CloudStorage/OneDrive-CivicaUKLtd/repos/mine/azure/my-agentic-ops/scenario"
+  azd env select webapp-dev
+
+  export AZURE_SUBSCRIPTION_ID="$(az account show --query id -o tsv)"
+  export AZURE_LOCATION=eastus
+  export SQL_ENTRA_ADMIN_OBJECT_ID="$(az ad signed-in-user show --query id -o tsv)"
+  export SQL_ENTRA_ADMIN_LOGIN="$(az ad signed-in-user show --query userPrincipalName -o tsv)"
+
+  read -r -s -p "Enter a new SQL administrator password (input hidden): " SQL_ADMIN_PASSWORD
+  printf '\n'
+  export SQL_ADMIN_PASSWORD
+
+  azd provision --no-prompt
+)
+-->
